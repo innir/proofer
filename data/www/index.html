@@ -1,0 +1,19 @@
+<!DOCTYPE HTML><html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/data.js"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <h2>Proofer</h2>
+  <figure class="highcharts-figure">
+    <div id="container"></div>
+  </figure>
+  <br>
+  <div align="center" style="font-size: large;">Setpoint: <input type="number" id="sTemp" name="sTemp" min="20" max="35" step="0.5" value="21" onchange="updateSTemp()">°C<br><br>
+  <button type="button" id="start" onClick="setState('on')">Start</button> &nbsp;&nbsp; <button type="button" id="stop" onClick="setState('off')">Stop</button></div>
+</body>
+<script src="./script.js"></script>
+</html>

@@ -1,0 +1,43 @@
+body {
+  min-width: 310px;
+  max-width: 800px;
+  height: 400px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+#sTemp {
+  width: 3em;
+  border: none;
+  font-size: large;
+}
+
+#start {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 15px 32px;
+  font-weight : bold;
+  font-size: large;
+}
+
+#start:active {
+  background-color: #4CAF50;
+}
+
+#stop {
+  background-color: #f88981;
+  color: white;
+  border: none;
+  padding: 15px 32px;
+  font-weight : bold;
+  font-size: large;
+}
+
+#stop:active {
+  background-color: #f44336;
+}
