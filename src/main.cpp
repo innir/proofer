@@ -13,6 +13,9 @@
 // Pin to control the relay is D1
 #define RELAY_PIN D1
 
+// Set your time zone, see TZ.h for available time zones
+#define TZ TZ_Europe_Berlin
+
 // Control heating every 10 seconds
 #define UPDATE_INTERVAL_MS 10000
 
@@ -118,7 +121,7 @@ void setup(void) {
   Serial.println(WiFi.localIP());
 
   // Start NTP server
-  configTime(TZ_Europe_Berlin, "pool.ntp.org");
+  configTime(TZ, "pool.ntp.org");
   yield();
   delay(2000);
   yield();
