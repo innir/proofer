@@ -66,6 +66,19 @@ function setState(state) {
         updateCSS(state);
       })
       .catch((error) => { console.error('Error:', error); });
+  if (state === 'on') {
+    fetch('/proofEnd?value=' + document.getElementById('proofEnd').value, {
+      method : 'POST',
+      headers : {'Accept' : 'text/plain', 'Content-Type' : 'text/plain'}
+    })
+        .then((response) => {
+          if (!response.ok) {
+            console.log("Couldn't update proofing end.");
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+        })
+        .catch((error) => { console.error('Error:', error); });
+  }
 }
 
 function updateState() {
@@ -96,6 +109,49 @@ function updateState() {
       })
       .then((state) => { updateCSS(state); })
       .catch((error) => { console.error('Error:', error); });
+}
+
+Date.prototype.toLocalDateTimeString = function() {
+  const [month, day, year, hour, minute, second] = [
+    this.getMonth() + 1,
+    this.getDate(),
+    this.getFullYear(),
+    this.getHours(),
+    this.getMinutes(),
+    this.getSeconds(),
+  ];
+  return year + "-" + (month < 10 ? "0" + month : month) + "-" +
+         (day < 10 ? "0" + day : day) + "T" + (hour < 10 ? "0" + hour : hour) +
+         ":" + (minute < 10 ? "0" + minute : minute) + ":" +
+         (second < 10 ? "0" + second : second);
+}
+
+Date.prototype.addHours = function(h) {
+  this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+  return this;
+}
+
+function setProofingEnd() {
+  fetch('/proofEnd', {method : 'GET', headers : {'Accept' : 'text/plain'}})
+      .then((response) => {
+        if (!response.ok) {
+          console.log("Couldn't get proofing end.");
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.text()
+      })
+      .then((proofEnd) => {
+        document.getElementById('proofEnd').min = proofEnd;
+        document.getElementById('proofEnd').value = proofEnd;
+      })
+      .catch((error) => { console.error('Error:', error); });
+}
+
+function addHours(hours) {
+  var date = new Date(document.getElementById('proofEnd').value)
+                 .addHours(hours)
+                 .toLocalDateTimeString();
+  document.getElementById('proofEnd').value = date;
 }
 
 setInterval(updateState, 1000);

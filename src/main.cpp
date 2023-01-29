@@ -31,6 +31,7 @@ float cTemp = 0.0;
 bool isSystemOn = false;
 bool isHeating = false;
 bool prevHeatingState = false;
+std::tm proofEnd = {};
 
 uint64 previousMillis = 0;
 uint64 csv_previousMillis = 0;
@@ -88,6 +89,24 @@ void handleSytemState(AsyncWebServerRequest *request) {
                       String(isSystemOn ? "on" : "off"));
   } else if (request->method() == HTTP_GET) {
     request->send(200, "text/plain", String(isSystemOn ? "on" : "off"));
+  }
+}
+
+void handleProofEnd(AsyncWebServerRequest *request) {
+  if (request->method() == HTTP_POST) {
+    if (!request->hasParam("value")) {
+      request->send(400, "text/plain", "Bad Request");
+      return;
+    }
+    char val[std::size("yyyy-mm-ddThh:mm:ss")];
+    request->getParam("value")->value().toCharArray(val, std::size(val));
+    strptime(val, "%FT%T", &proofEnd);
+    request->send(200, "text/plain", "OK: Proofing end set");
+  } else if (request->method() == HTTP_GET) {
+    char timeString[std::size("yyyy-mm-ddThh:mm:ss")];
+    std::strftime(std::data(timeString), std::size(timeString), "%FT%T",
+                  &proofEnd);
+    request->send(200, "text/plain", String(timeString));
   }
 }
 
@@ -164,6 +183,7 @@ void setup(void) {
   // Handle API calls
   server.on("/systemState", handleSytemState);
   server.on("/setpoint", handleSetpoint);
+  server.on("/proofEnd", handleProofEnd);
 
   // Serve static files
   server.serveStatic("/data.csv", LittleFS, "/data.csv")
@@ -176,6 +196,10 @@ void setup(void) {
     request->send(404, "text/plain", "Not Found");
   });
 
+  // Set proofing end to now
+  time_t now = std::time({});
+  proofEnd = *std::localtime(&now);
+
   server.begin();
 }
 
@@ -187,22 +211,27 @@ void loop(void) {
     csv_previousMillis = currentMillis;
     cTemp = getTemp();
     writeCSV();
-    Serial.println("System is " + String(isSystemOn ? "on" : "off") +
-                   ", heater is " + String(isHeating ? "on" : "off") +
-                   ", temp is " + String(cTemp) + "°C" + " and setpoint is " +
-                   String(sTemp) + "°C");
+    Serial.println(
+        getTime() + ": System is " + String(isSystemOn ? "on" : "off") +
+        ", heater is " + String(isHeating ? "on" : "off") + ", temp is " +
+        String(cTemp) + "°C" + " and setpoint is " + String(sTemp) + "°C");
   }
 
   currentMillis = millis();
   if (currentMillis - previousMillis >= UPDATE_INTERVAL_MS) {
     previousMillis = currentMillis;
     prevHeatingState = isHeating;
-    cTemp = getTemp();
-    if (isSystemOn && cTemp <= sTemp - LOWER_ALLOWANCE) {
-      isHeating = true;
-    } else if (isSystemOn && cTemp >= sTemp + UPPER_ALLOWANCE) {
-      isHeating = false;
-    } else if (!isSystemOn) {
+    if (std::mktime(&proofEnd) <= std::time({})) {
+      isSystemOn = false;
+    }
+    if (isSystemOn) {
+      cTemp = getTemp();
+      if (cTemp <= sTemp - LOWER_ALLOWANCE) {
+        isHeating = true;
+      } else if (cTemp >= sTemp + UPPER_ALLOWANCE) {
+        isHeating = false;
+      }
+    } else {
       isHeating = false;
     }
     if (prevHeatingState != isHeating) {

@@ -6,13 +6,15 @@
   <script src="https://code.highcharts.com/modules/data.js"></script>
   <link rel="stylesheet" href="./style.css">
 </head>
-<body>
+<body onload="setProofingEnd()">
   <h2>Proofer</h2>
   <figure class="highcharts-figure">
     <div id="container"></div>
   </figure>
   <br>
-  <div align="center" style="font-size: large;">Setpoint: <input type="number" id="sTemp" name="sTemp" min="20" max="35" step="0.5" value="21" onchange="updateSTemp()">°C<br><br>
+  <div align="center" style="font-size: large;">Setpoint: <input type="number" id="sTemp" name="sTemp" min="20" max="35" step="0.5" value="21" onchange="updateSTemp()">°C<br>
+  Proofing end: <input type="datetime-local" id="proofEnd" name="proofEnd">&nbsp;<button type="button" id="plus1" onClick="addHours('1')">+1h</button>&nbsp;<button type="button" id="plus3" onClick="addHours('3')">+3h</button>&nbsp;<button type="button" id="plus8" onClick="addHours('8')">+8h</button><br>
+  <span style="color: grey; font-size: small;">You need to set end before you press start.</span><br><br>
   <button type="button" id="start" onClick="setState('on')">Start</button> &nbsp;&nbsp; <button type="button" id="stop" onClick="setState('off')">Stop</button></div>
 </body>
 <script src="./script.js"></script>
