@@ -32,8 +32,8 @@ bool isHeating = false;
 bool prevHeatingState = false;
 std::tm proofEnd = {};
 
-uint64 previousMillis = 0;
-uint64 csv_previousMillis = 0;
+uint64_t previousMillis = 0;
+uint64_t csv_previousMillis = 0;
 
 File csv;
 
@@ -205,7 +205,7 @@ void setup(void) {
 void loop(void) {
   ArduinoOTA.handle();
 
-  uint64 currentMillis = millis();
+  uint64_t currentMillis = millis();
   if (currentMillis - csv_previousMillis >= CSV_UPDATE_INTERVAL_MS) {
     csv_previousMillis = currentMillis;
     cTemp = getTemp();
