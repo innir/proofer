@@ -19,9 +19,8 @@
 // Control heating every 10 seconds
 #define UPDATE_INTERVAL_MS 10000
 
-// Set range for upper/lower allowance
-#define UPPER_ALLOWANCE 0
-#define LOWER_ALLOWANCE 0.5
+// Offset to compensate for the inertia of the heating system [°C]
+#define THERMAL_OFFSET 0.2
 
 // Update csv once a minute
 #define CSV_UPDATE_INTERVAL_MS 60000
@@ -226,9 +225,9 @@ void loop(void) {
     }
     if (isSystemOn) {
       cTemp = getTemp();
-      if (cTemp <= sTemp - LOWER_ALLOWANCE) {
+      if (cTemp < sTemp - THERMAL_OFFSET) {
         isHeating = true;
-      } else if (cTemp >= sTemp + UPPER_ALLOWANCE) {
+      } else if (cTemp >= sTemp - THERMAL_OFFSET) {
         isHeating = false;
       }
     } else {
