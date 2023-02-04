@@ -1,0 +1,49 @@
+
+(kicad_symbol_lib (version 20211014) (generator kicad_symbol_editor)
+  (symbol "250-203" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
+    (property "Reference" "X" (id 0) (at -3.61083 9.74225 0)
+      (effects (font (size 1.27 1.27)) (justify bottom left))
+    )
+    (property "Value" "250-203" (id 1) (at -3.61119 -10.6235 0)
+      (effects (font (size 1.27 1.27)) (justify bottom left))
+    )
+    (property "Footprint" "P-250-203" (id 2) (at 0 0 0)
+      (effects (font (size 1.27 1.27)) (justify bottom) hide)
+    )
+    (symbol "250-203_0_0"
+      (polyline
+        (pts (xy -3.81 2.54) (xy 3.81 2.54)) (stroke (width 0.2))
+      )
+      (polyline
+        (pts (xy 3.81 -2.54) (xy -3.81 -2.54)) (stroke (width 0.2))
+      )
+      (rectangle (start -3.81 -7.62) (end 3.81 7.62)
+        (stroke (width 0.2)) (fill (type background))
+      )
+      (pin bidirectional inverted (at -2.54 -5.08 0) (length 2.54)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "L3"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+      (pin bidirectional inverted (at -2.54 0.0 0) (length 2.54)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "L2"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+      (pin bidirectional inverted (at -2.54 5.08 0) (length 2.54)
+        (name "~"
+          (effects (font (size 1.016 1.016)))
+        )
+        (number "L1"
+          (effects (font (size 1.016 1.016)))
+        )
+      )
+    )
+  )
+)

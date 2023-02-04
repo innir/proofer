@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "snapeda-libraries")(type "KiCad")(uri "${KIPRJMOD}/snapeda-libraries")(options "")(descr ""))
+)
