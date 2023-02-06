@@ -3,7 +3,13 @@
 #include <ESPAsyncWebServer.h>
 #include <FS.h>
 #include <LittleFS.h>
+// Set your time zone (on ESP8266, see TZ.h for available time zones)
+#ifdef ESP32
+#define TZ PSTR("CET-1CEST,M3.5.0,M10.5.0/3")
+#else
 #include <TZ.h>
+#define TZ TZ_Europe_Berlin
+#endif
 #include <ctime>
 #include <tempProbe.h>
 
@@ -11,10 +17,10 @@
 #define NO_GLOBAL_MDNS
 
 // Pin to control the relay is D1
+#ifdef ARDUINO_LOLIN_C3_MINI
+#define D1 10
+#endif
 #define RELAY_PIN D1
-
-// Set your time zone, see TZ.h for available time zones
-#define TZ TZ_Europe_Berlin
 
 // Control heating every 10 seconds
 #define UPDATE_INTERVAL_MS 10000
@@ -41,9 +47,8 @@ AsyncWebServer server(80);
 
 String getTime() {
   time_t now = std::time({});
-  char timeString[std::size("yyyy-mm-dd hh:mm:ss")];
-  std::strftime(std::data(timeString), std::size(timeString), "%F %T",
-                std::localtime(&now));
+  char timeString[sizeof("yyyy-mm-dd hh:mm:ss")];
+  std::strftime(timeString, sizeof(timeString), "%F %T", std::localtime(&now));
   return String(timeString);
 }
 
@@ -97,14 +102,13 @@ void handleProofEnd(AsyncWebServerRequest *request) {
       request->send(400, "text/plain", "Bad Request");
       return;
     }
-    char val[std::size("yyyy-mm-ddThh:mm:ss")];
-    request->getParam("value")->value().toCharArray(val, std::size(val));
+    char val[sizeof("yyyy-mm-ddThh:mm:ss")];
+    request->getParam("value")->value().toCharArray(val, sizeof(val));
     strptime(val, "%FT%T", &proofEnd);
     request->send(200, "text/plain", "OK: Proofing end set");
   } else if (request->method() == HTTP_GET) {
-    char timeString[std::size("yyyy-mm-ddThh:mm:ss")];
-    std::strftime(std::data(timeString), std::size(timeString), "%FT%T",
-                  &proofEnd);
+    char timeString[sizeof("yyyy-mm-ddThh:mm:ss")];
+    std::strftime(timeString, sizeof(timeString), "%FT%T", &proofEnd);
     request->send(200, "text/plain", String(timeString));
   }
 }
@@ -123,8 +127,12 @@ void setup(void) {
 
   // Get WiFi credentials
   File cred = LittleFS.open("/cred.conf", "r");
-  String ssid = cred.readStringUntil('\n');
-  String password = cred.readStringUntil('\n');
+  String tmp = cred.readStringUntil('\n');
+  char ssid[tmp.length() + 1];
+  tmp.toCharArray(ssid, sizeof(ssid));
+  tmp = cred.readStringUntil('\n');
+  char password[tmp.length() + 1];
+  tmp.toCharArray(password, sizeof(password));
   cred.close();
 
   // Connect to WiFi
@@ -139,10 +147,15 @@ void setup(void) {
   Serial.println(WiFi.localIP());
 
   // Start NTP server
-  configTime(TZ, "pool.ntp.org");
+  configTzTime(TZ, "pool.ntp.org");
   yield();
-  delay(2000);
-  yield();
+  // Let's wait up to one minute to get a NTP sync
+  while (std::time({}) <= 60) {
+    Serial.println("Waiting for NTP sync...");
+    delay(2000);
+    yield();
+  }
+  Serial.println("Got NTP sync, it's " + getTime());
 
   // Set up OTA
   ArduinoOTA.onStart([]() {

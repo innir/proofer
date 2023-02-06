@@ -2,6 +2,9 @@
 #include <tempProbe.h>
 
 // Temperature sensor is connected to D4
+#ifdef ARDUINO_LOLIN_C3_MINI
+#define D4 6
+#endif
 #define ONE_WIRE_BUS D4
 
 OneWire oneWire(ONE_WIRE_BUS);
