@@ -2,3 +2,6 @@
 .clang_complete
 .ccls
 data/cred.conf
+kicad/*.kicad_prl
+kicad/fp-info-cache
+kicad/kicad-backups
