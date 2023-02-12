@@ -379,7 +379,9 @@
         "microvia_drill": 0.1,
         "name": "load",
         "nets": [
-          "Net-(PS1-Pad1)"
+          "/L",
+          "/L_OUT",
+          "/N"
         ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",
